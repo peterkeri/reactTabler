@@ -1,39 +1,47 @@
-import React, { Component }  from 'react';
-import Table from './components/test/Table';
-import Form from './components/test/CreateForm';
-
-class App extends Component {
-  state = {
-    data: [],
-  }  
+import * as React from "react";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 
 
-  removeRow = index => {
-    const { data } = this.state
-  
-    this.setState({
-      data: data.filter((data, i) => {
-        return i !== index
-      }),
-    })
-  }
+import ClientHome from "./pages/Client/Home";
+import AdminHome from "./pages/Admin/Home";
+import Login from './pages/Core/Auth/Login';
 
-  handleSubmit = row => {
-    this.setState({ data: [...this.state.data, row] })
-  }
+import "tabler-react/dist/Tabler.css";
 
 
-  render() {
-    const { data } = this.state
+const PrivateRoute = ({ component: Component, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={props =>
+        localStorage.getItem('access_token') ? (
+          <Component {...props} />
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/login',
+              state: { from: props.location }
+            }}
+          />
+        )
+      }
+    />
+  )
+}
 
-    return (
-      <div className="container">
-        <Table data={data} removeRow={this.removeRow}/>
 
-        <Form handleSubmit={this.handleSubmit}/>
-      </div>
-    )
-  }
+function App() {
+  return (
+    
+      <Router>
+        <Switch>
+          <Route exact path="/" component={ClientHome} />
+          <Route exact path="/login" component={Login} />
+          <PrivateRoute path="/admin" exact component={AdminHome} />
+        </Switch>
+      </Router>
+   
+  );
 }
 
 export default App;
