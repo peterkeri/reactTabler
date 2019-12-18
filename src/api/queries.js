@@ -24,7 +24,7 @@ const headers = {
  *
  */
 
-export const userLogin = (data) => secureFetch('/user/login', 'POST', headers, JSON.stringify(data))
+export const userLogin = (data) => secureFetch('/auth/user/login', 'POST', headers, JSON.stringify(data))
   .then(res => res)
   .catch(error => error)
 
@@ -35,10 +35,28 @@ export const userLogin = (data) => secureFetch('/user/login', 'POST', headers, J
  */
 
 export const userLogout = () => (
-  secureFetch('/user/logout', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+  secureFetch('/auth/user/logout', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
     .then(res => res)
     .catch(error => error)
 
+)
+
+/**
+ * 
+ */
+export const userRolesByToken = () => (
+  secureFetch('/auth/user/rolesByToken', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+    .then(res => res)
+    .catch(error => error)
+)
+
+/**
+ * 
+ */
+export const userPermissionsByToken = () => (
+  secureFetch('/auth/user/permissionsByToken', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+    .then(res => res)
+    .catch(error => error)
 )
 
 /**

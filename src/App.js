@@ -38,6 +38,7 @@ function App() {
           <Route exact path="/" component={ClientHome} />
           <Route exact path="/login" component={Login} />
           <PrivateRoute path="/admin" exact component={AdminHome} />
+          <PrivateRoute path="/kkk" component={AdminHome} />
         </Switch>
       </Router>
    

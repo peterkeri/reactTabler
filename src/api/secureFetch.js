@@ -1,8 +1,6 @@
 // eslint-disable-next-line no-undef
 var API_URL = process.env.REACT_APP_API_URL
 
-console.log(process.env)
-
 export const secureFetch = (url, method, secureHeaders, data) => (
   new Promise((resolve, reject) => {
     return fetch(`${API_URL}${url}`, {
@@ -15,7 +13,7 @@ export const secureFetch = (url, method, secureHeaders, data) => (
       } else {
         switch (response.status) {
         case 401:
-          if (url !== '/user/login') {
+          if (url !== '/auth/user/login') {
             console.log(`UNAUTHORIZED ${response.status}`)
             localStorage.clear()
             window.location.pathname = '/login'
