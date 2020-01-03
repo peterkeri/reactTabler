@@ -3,10 +3,6 @@ import { userLogin, userRolesByToken, userPermissionsByToken } from '../../../ap
 import { Redirect } from 'react-router-dom'
 import { Form, Container, Grid, Button, Card } from 'tabler-react'
 
-
-const path = localStorage.getItem('role_name') ? localStorage.getItem('role_name').toLowerCase() : 'kkk'
-var BASE_PATH = `/${path}`
-
 class Login extends Component {
     constructor(props) {
         super(props)
@@ -35,7 +31,22 @@ class Login extends Component {
             identity: this.state.identity,
             password: this.state.password
           }
-          this.login(formValues)
+
+        const login = this.login(formValues)
+        
+            login.then(async values => {
+            const roles = await this.roles()
+            const perms = await this.perms()
+            return {roles, perms}
+        }).then(({roles, perms}) => {
+            this.setRolesToLocalStorage(roles ? roles : [])
+            this.setPermsToLocalStorage(perms ? perms : [])
+            this.setState({
+                redirectToReferrer: true
+            })
+        }).catch(e => {
+            console.log(e);
+        });
     }
 
     /**
@@ -53,54 +64,48 @@ class Login extends Component {
     /**
      * 
      */
-    setRolesToLocalStorage = (data) => {
-        let roles = data.role.map(role => ({ role_id: `${role.id}`, role_name: `${role.name}` }))
-        const newData = Object.assign(data, ...roles)
-        for (const key in newData) {
-            if (newData.hasOwnProperty(key)) {
-                localStorage.setItem(key, newData[key])
-            }
-        }
-        return newData
+    setRolesToLocalStorage = ({data: roles}) => {
+        const rolesData = roles.map(({id, name}) => ({ id, name}))
+        localStorage.setItem('roles', JSON.stringify(rolesData))
     }
 
     /**
      * 
      */
-    setPermsToLocalStorage = (data) => {
-        let permissionsArray = data.permissions.map(permission => permission.name)
-        data.permissions = permissionsArray
-        for (const key in data) {
-            if (data.hasOwnProperty(key)) {
-                localStorage.setItem(key, data[key])
-            }
-        }
-        return data
-    }
+    setPermsToLocalStorage = ({data: permissions}) => {
+        const permissionsName = permissions.map(({name}) => name)
+        localStorage.setItem('permissions', JSON.stringify(permissionsName))
+    } 
     
     /**
      * 
      */
     login = (data) => userLogin(data)
         .then(res => res.json())
-        .then(json => {
-            if (json.hasOwnProperty('success')) {
-                this.setBaseDataToLocalStorage(json.data)
-                return userRolesByToken()
-            } else {
-                throw new Error("bumm")
-            }
-        }).then(role => {
-            console.log(role)
-        })
+        .then(json => json.data)
+        .then(data => this.setBaseDataToLocalStorage(data))
         .catch(error => error)
 
-  
+    /** 
+     * 
+    */
+    roles = () => userRolesByToken()
+        .then(res => res.json())
+        .then(json => json)
+        .catch(error => error)
+
+    /**
+     * 
+     */
+    perms = () => userPermissionsByToken()
+        .then(res => res.json())
+        .then(json => json)
+        .catch(error => error)
 
 
     render() {
         const { location } = this.props
-        const { from } = location.state || { from: { pathname: BASE_PATH } }
+        const { from } = location.state || { from: { pathname: "/" } }
         const { redirectToReferrer } = this.state
         if (redirectToReferrer) {
             return <Redirect to={from.pathname} />

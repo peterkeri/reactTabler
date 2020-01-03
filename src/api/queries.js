@@ -44,6 +44,15 @@ export const userLogout = () => (
 /**
  * 
  */
+export const userDataByToken = () => (
+  secureFetch('/auth/user/dataByToken', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+    .then(res => res)
+    .catch(error => error)
+)
+
+/**
+ * 
+ */
 export const userRolesByToken = () => (
   secureFetch('/auth/user/rolesByToken', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
     .then(res => res)
@@ -58,6 +67,13 @@ export const userPermissionsByToken = () => (
     .then(res => res)
     .catch(error => error)
 )
+
+/**
+ * 
+ */
+export const getPublicMenu = () => secureFetch(`/getPublicMenu`,'GET', headers)
+  .then(res => res)
+  .catch(error => error)
 
 /**
  * User reset password

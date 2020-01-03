@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-d
 import ClientHome from "./pages/Client/Home";
 import AdminHome from "./pages/Admin/Home";
 import Login from './pages/Core/Auth/Login';
+import { isAuthenticated } from './common/common';
 
 import "tabler-react/dist/Tabler.css";
 
@@ -14,7 +15,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={props =>
-        localStorage.getItem('access_token') ? (
+        isAuthenticated() ? (
           <Component {...props} />
         ) : (
           <Redirect
@@ -32,13 +33,11 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
 
 function App() {
   return (
-    
       <Router>
         <Switch>
           <Route exact path="/" component={ClientHome} />
           <Route exact path="/login" component={Login} />
           <PrivateRoute path="/admin" exact component={AdminHome} />
-          <PrivateRoute path="/kkk" component={AdminHome} />
         </Switch>
       </Router>
    
