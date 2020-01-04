@@ -2,9 +2,9 @@ import * as React from "react";
 import SiteWrapper from "../../components/SiteWrapper";
 import { Container, Header, Card, Grid, BlogCard } from "tabler-react";
 
-function Home() {
+function Home(props) {
   return (
-    <SiteWrapper>
+    <SiteWrapper {...props}>
       <Container>
         <Header.H4 className="mt-4">Admin Dashboard</Header.H4>
 

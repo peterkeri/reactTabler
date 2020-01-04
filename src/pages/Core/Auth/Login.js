@@ -90,7 +90,7 @@ class Login extends Component {
   login = data =>
     userLogin(data)
       .then(res => res.json())
-      .then(json => json.data)
+      .then(({ data }) => data)
       .then(data => this.setBaseDataToLocalStorage(data))
       .catch(error => error);
 
