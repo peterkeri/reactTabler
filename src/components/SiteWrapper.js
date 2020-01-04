@@ -1,134 +1,108 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-unused-vars */
-import React, { Component } from 'react'
+import React, { Component } from "react";
 import { NavLink, withRouter } from "react-router-dom";
 
-import {Site, Nav, Grid, List, Button, RouterContextProvider} from "tabler-react";
-import { isAuthenticated } from '../common/common';
-import { userDataByToken, getPublicMenu, userLogout } from '../api/queries';
+import {
+  Site,
+  Nav,
+  Grid,
+  List,
+  Button,
+  RouterContextProvider
+} from "tabler-react";
+import { isAuthenticated } from "../common/common";
+import { userDataByToken, getPublicMenu, userLogout } from "../api/queries";
 
-const navBarItems = (menuItems) => menuItems.map(({name, description, icon, path, children}) => {
-  let menuItem = {
-    value: name,
-    to: path,
-    icon: icon,
-    LinkComponent: withRouter(NavLink),
-    useExact: true,
+class SiteWrapper extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userData: {},
+      publicMenu: []
+    };
   }
-  if (children.length > 0 ) {
-    menuItem = {
-      value: name,
-      icon: icon,
-      useExact: true,
-    }
-    const subItems = children.map(({name, description, icon, path}) => ({
-      value: name,
-      to: path,
-      icon: icon,
-      LinkComponent: withRouter(NavLink),
-      useExact: true,
-    }))
-    menuItem = {...menuItem, subItems}
-  }
-  return menuItem
-}
-
-)
-const logOut = (e) => {
-  e.preventDefault();
-  userLogout().then(() => {
-    localStorage.clear()
-    window.location.pathname = '/'
-  })
-}
-const accountDropdownProps = ({email, name}) => {
-  return {
-    avatarURL: "./demo/faces/female/5.jpg",
-    name: email,
-    description: "Click for menu",
-    options: [
-      { icon: "user", value: "Profile" },
-      { icon: "settings", value: "Settings" },
-      { icon: "mail", value: "Inbox", badge: "6" },
-      { icon: "send", value: "Message" },
-      { isDivider: true },
-      { icon: "help-circle", value: "Need help?" },
-      { icon: "log-out", value: "Sign out",  onClick: logOut },
-    ],
-    
-  }
-};
-
-const signInButton = () => {
-
-}
-
-
-class SiteWrapper extends Component{
-
-  userData = () => userDataByToken()
-        .then(res => res.json())
-        .then(json => {
-          this.setState({ userData: json.data })})
-        .catch(error => error)
-
-  publicMenu = () => getPublicMenu()
-    .then(res => res.json())
-    .then(json => {
-      this.setState({ publicMenu: json.data })})
-    .catch(error => error)  
 
   componentDidMount() {
-    this.publicMenu()
-    isAuthenticated() && this.userData()
+    this.publicMenu();
+    isAuthenticated() && this.userData();
   }
 
+  /**
+   * get user data
+   */
+  userData = () =>
+    userDataByToken()
+      .then(res => res.json())
+      .then(({ data: userData }) => this.setState({ userData }))
+      .catch(error => error);
 
-  state = {
-    notificationsObjects: [
-      {
-        unread: true,
-        avatarURL: "http://tabler-react.com/demo/faces/male/41.jpg",
-        message: (
-          <React.Fragment>
-            <strong>Nathan</strong> pushed new commit: Fix page load performance
-            issue.
-          </React.Fragment>
-        ),
-        time: "10 minutes ago",
-      },
-      {
-        unread: true,
-        avatarURL: "demo/faces/female/1.jpg",
-        message: (
-          <React.Fragment>
-            <strong>Alice</strong> started new task: Tabler UI design.
-          </React.Fragment>
-        ),
-        time: "1 hour ago",
-      },
-      {
-        unread: false,
-        avatarURL: "demo/faces/female/18.jpg",
-        message: (
-          <React.Fragment>
-            <strong>Rose</strong> deployed new version of NodeJS REST Api // V3
-          </React.Fragment>
-        ),
-        time: "2 hours ago",
-      },
-    ],
-    userData: {},
-    publicMenu: []
+  /**
+   * get public menu items
+   */
+  publicMenu = () =>
+    getPublicMenu()
+      .then(res => res.json())
+      .then(({ data: publicMenu }) => this.setState({ publicMenu }))
+      .catch(error => error);
+
+  /**
+   * log out, clear local storage, rediredt to path
+   */
+  logOutHandler = e => {
+    const { history } = this.props;
+    e.preventDefault();
+    userLogout().then(() => {
+      localStorage.clear();
+      history.push("/");
+    });
   };
 
+  /**
+   *
+   */
+  accountDropdownProps = ({ email, name }) => {
+    return {
+      avatarURL: "./demo/faces/female/5.jpg",
+      name: email,
+      description: "Click for menu",
+      options: [
+        { icon: "user", value: "Profile" },
+        { icon: "settings", value: "Settings" },
+        { icon: "mail", value: "Inbox", badge: "6" },
+        { icon: "send", value: "Message" },
+        { isDivider: true },
+        { icon: "help-circle", value: "Need help?" },
+        { icon: "log-out", value: "Sign out", onClick: this.logOutHandler }
+      ]
+    };
+  };
+
+  navBarItems = menuItems =>
+    menuItems.map(({ name, description, icon, path, children }) => {
+      const menuItem = {
+        value: name,
+        icon: icon,
+        useExact: true
+      };
+
+      if (children.length > 0) {
+        const subItems = children.map(({ name, description, icon, path }) => ({
+          value: name,
+          to: path,
+          icon: icon,
+          LinkComponent: withRouter(NavLink),
+          useExact: true
+        }));
+        return { ...menuItem, subItems };
+      }
+      return { ...menuItem, LinkComponent: withRouter(NavLink), to: path };
+    });
+
+  signInButton = () => {};
+
   render() {
-    const notificationsObjects = this.state.notificationsObjects || [];
-    const { userData, publicMenu } = this.state
-    const unreadCount = this.state.notificationsObjects.reduce(
-      (a, v) => a || v.unread,
-      false
-    );
+    const { userData, publicMenu } = this.state;
 
     return (
       <Site.Wrapper
@@ -138,19 +112,16 @@ class SiteWrapper extends Component{
           imageURL: "http://tabler-react.com/demo/brand/tabler.svg",
           navItems: !isAuthenticated() ? (
             <Nav.Item type="div" className="d-none d-md-flex">
-              <Button
-                href="/login"
-                size="l"
-                RootComponent="a"
-                color="primary"
-              >
+              <Button href="/login" size="l" RootComponent="a" color="primary">
                 Sign In
               </Button>
             </Nav.Item>
           ) : null,
-          accountDropdown: isAuthenticated() ? accountDropdownProps(userData) : signInButton(),
+          accountDropdown: isAuthenticated()
+            ? this.accountDropdownProps(userData)
+            : this.signInButton()
         }}
-        navProps={{ itemsObjects: navBarItems(publicMenu) }}
+        navProps={{ itemsObjects: this.navBarItems(publicMenu) }}
         routerContextComponentType={withRouter(RouterContextProvider)}
         footerProps={{
           links: [
@@ -161,7 +132,7 @@ class SiteWrapper extends Component{
             <a href="#">Five Link</a>,
             <a href="#">Sixth Link</a>,
             <a href="#">Seventh Link</a>,
-            <a href="#">Eigth Link</a>,
+            <a href="#">Eigth Link</a>
           ],
           note:
             "Premium and Open Source dashboard template with responsive and high quality UI. For Free!",
@@ -204,7 +175,7 @@ class SiteWrapper extends Component{
                 </Button>
               </Grid.Col>
             </React.Fragment>
-          ),
+          )
         }}
       >
         {this.props.children}
