@@ -1,14 +1,18 @@
 import * as React from "react";
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
-
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch
+} from "react-router-dom";
 
 import ClientHome from "./pages/Client/Home";
 import AdminHome from "./pages/Admin/Home";
-import Login from './pages/Core/Auth/Login';
-import { isAuthenticated } from './common/common';
+import Login from "./pages/Core/Auth/Login";
+import { Error404Page } from "tabler-react";
+import { isAuthenticated } from "./common/common";
 
 import "tabler-react/dist/Tabler.css";
-
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   return (
@@ -20,27 +24,26 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         ) : (
           <Redirect
             to={{
-              pathname: '/login',
+              pathname: "/login",
               state: { from: props.location }
             }}
           />
         )
       }
     />
-  )
-}
-
+  );
+};
 
 function App() {
   return (
-      <Router>
-        <Switch>
-          <Route exact path="/" component={ClientHome} />
-          <Route exact path="/login" component={Login} />
-          <PrivateRoute path="/admin" exact component={AdminHome} />
-        </Switch>
-      </Router>
-   
+    <Router>
+      <Switch>
+        <Route exact path="/" component={ClientHome} />
+        <Route path="/login" component={Login} />
+        <PrivateRoute path="/admin" exact component={AdminHome} />
+        <Route component={Error404Page} />
+      </Switch>
+    </Router>
   );
 }
 
