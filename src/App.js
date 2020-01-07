@@ -6,13 +6,16 @@ import {
   Switch
 } from "react-router-dom";
 
-import ClientHome from "./pages/Client/Home";
-import AdminHome from "./pages/Admin/Home";
+import PublicHome from "./pages/Public/Home";
+import ProtectedHome from "./pages/Protected/Home";
 import Login from "./pages/Core/Auth/Login";
+import ResetPasswordRequest from './pages/Core/Auth/ResetPasswordRequest'
 import { Error404Page } from "tabler-react";
 import { isAuthenticated } from "./common/common";
 
 import "tabler-react/dist/Tabler.css";
+import "./App.css";
+
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   return (
@@ -24,7 +27,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: "/user/login",
               state: { from: props.location }
             }}
           />
@@ -38,9 +41,10 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" component={ClientHome} />
-        <Route path="/login" component={Login} />
-        <PrivateRoute path="/admin" exact component={AdminHome} />
+        <Route exact path="/" component={ PublicHome} />
+        <Route path="/user/login" component={Login} />
+        <Route path="/user/request/password/reset" component={ResetPasswordRequest} />
+        <PrivateRoute path="/customer/" exact component={ProtectedHome} />
         <Route component={Error404Page} />
       </Switch>
     </Router>

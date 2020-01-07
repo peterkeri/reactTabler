@@ -1,11 +1,14 @@
 import React, { Component } from "react";
+
 import {
   userLogin,
   userRolesByToken,
   userPermissionsByToken
 } from "../../../api/queries";
 import { Redirect } from "react-router-dom";
-import { Form, Container, Grid, Button, Card } from "tabler-react";
+import { Container, Grid, Card } from "tabler-react";
+import { isAuthenticated } from "../../../common/common";
+import LoginForm from '../../../components/Forms/LoginForm'
 
 class Login extends Component {
   constructor(props) {
@@ -13,10 +16,14 @@ class Login extends Component {
     this.state = {
       identity: "",
       password: "",
+      formErrors: {},
       redirectToReferrer: false
     };
   }
 
+  /**
+   * 
+   */
   onChangeHandler = e => {
     const { name: target, value } = e.target;
 
@@ -40,9 +47,11 @@ class Login extends Component {
 
     login
       .then(async values => {
-        const roles = await this.roles();
-        const perms = await this.perms();
-        return { roles, perms };
+        if(isAuthenticated()) {
+          const roles = await this.roles();
+          const perms = await this.perms();
+          return { roles, perms};
+        }
       })
       .then(({ roles, perms }) => {
         this.setRolesToLocalStorage(roles ? roles : []);
@@ -90,8 +99,17 @@ class Login extends Component {
   login = data =>
     userLogin(data)
       .then(res => res.json())
-      .then(({ data }) => data)
-      .then(data => this.setBaseDataToLocalStorage(data))
+      .then(json => {
+        if (json.hasOwnProperty('success')) {
+          this.setBaseDataToLocalStorage(json.data)
+          return json.data
+        } else {
+          this.setState({
+            formErrors: json.errors,
+          })
+          return json.errors
+        }
+      })
       .catch(error => error);
 
   /**
@@ -114,51 +132,28 @@ class Login extends Component {
 
   render() {
     const { location } = this.props;
-    const { from } = location.state || { from: { pathname: "/" } };
-    const { redirectToReferrer } = this.state;
+    const { from } = location.state || { from: { pathname: "/customer/" } };
+    const { redirectToReferrer, formErrors, identity, password} = this.state;
+
     if (redirectToReferrer) {
       return <Redirect to={from.pathname} />;
     }
 
     return (
-      <Container className="pt-5">
-        <Grid.Row justifyContent="center">
+      <Container className="h-100">
+        <Grid.Row className="h-100" alignItems="center" justifyContent="center">
           <Grid.Col md={6}>
             <Card>
               <Card.Header>
                 <Card.Title>Login</Card.Title>
               </Card.Header>
               <Card.Body>
-                <Form onSubmit={this.handleSubmit}>
-                  <Form.Group>
-                    <Form.Input
-                      icon="user"
-                      size="sm"
-                      name="identity"
-                      placeholder="Email or Client number"
-                      value={this.state.identity}
-                      onChange={this.onChangeHandler}
-                    />
-                  </Form.Group>
-
-                  <Form.Group label="">
-                    <Form.Input
-                      icon="lock"
-                      type="password"
-                      size="sm"
-                      name="password"
-                      value={this.state.password}
-                      placeholder="Password"
-                      onChange={this.onChangeHandler}
-                    />
-                  </Form.Group>
-
-                  <Form.Group label="" className="text-right">
-                    <Button type="submit" size="sm" color="primary">
-                      Login
-                    </Button>
-                  </Form.Group>
-                </Form>
+                <LoginForm 
+                  identity={identity}
+                  password={password}
+                  formErrors={formErrors} 
+                  handleSubmit={this.handleSubmit} 
+                  onChangeHandler={this.onChangeHandler} />
               </Card.Body>
             </Card>
           </Grid.Col>

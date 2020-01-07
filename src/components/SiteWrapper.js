@@ -11,15 +11,19 @@ import {
   Button,
   RouterContextProvider
 } from "tabler-react";
+
 import { isAuthenticated } from "../common/common";
-import { userDataByToken, getPublicMenu, userLogout } from "../api/queries";
+import { userDataByToken, getPublicMenu, getAuthenticatedMenu, userLogout } from "../api/queries";
+import LoginButton from './Buttons/LoginButton'
+import TablerLogo from '../assets/images/tabler.svg'
 
 class SiteWrapper extends Component {
   constructor(props) {
     super(props);
     this.state = {
       userData: {},
-      publicMenu: []
+      publicMenu: [],
+      authenticatedMenu: []
     };
   }
 
@@ -45,6 +49,14 @@ class SiteWrapper extends Component {
       .then(res => res.json())
       .then(({ data: publicMenu }) => this.setState({ publicMenu }))
       .catch(error => error);
+
+  
+  authenticatedMenu = () => 
+    getAuthenticatedMenu()
+      .then(res => res.json())
+      .then(({ data: authenticatedMenu }) => this.setState({ authenticatedMenu }))
+      .catch(error => error);
+
 
   /**
    * log out, clear local storage, rediredt to path
@@ -102,26 +114,20 @@ class SiteWrapper extends Component {
   signInButton = () => {};
 
   render() {
-    const { userData, publicMenu } = this.state;
+    const { userData, publicMenu, authenticatedMenu } = this.state;
 
     return (
       <Site.Wrapper
         headerProps={{
           href: "/",
           alt: "Tabler React",
-          imageURL: "http://tabler-react.com/demo/brand/tabler.svg",
-          navItems: !isAuthenticated() ? (
-            <Nav.Item type="div" className="d-none d-md-flex">
-              <Button href="/login" size="l" RootComponent="a" color="primary">
-                Sign In
-              </Button>
-            </Nav.Item>
-          ) : null,
+          imageURL: TablerLogo,
+          navItems: !isAuthenticated() && <LoginButton />,
           accountDropdown: isAuthenticated()
             ? this.accountDropdownProps(userData)
             : this.signInButton()
         }}
-        navProps={{ itemsObjects: this.navBarItems(publicMenu) }}
+        navProps={{ itemsObjects: this.navBarItems(!isAuthenticated() ? publicMenu : authenticatedMenu) }}
         routerContextComponentType={withRouter(RouterContextProvider)}
         footerProps={{
           links: [

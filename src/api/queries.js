@@ -75,6 +75,13 @@ export const getPublicMenu = () => secureFetch(`/getPublicMenu`,'GET', headers)
   .then(res => res)
   .catch(error => error)
 
+
+export const getAuthenticatedMenu = () => ( 
+  secureFetch('/getAuthenticatedMenu', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+    .then(res => res)
+    .catch(error => error)
+)
+
 /**
  * User reset password
  *
@@ -82,7 +89,7 @@ export const getPublicMenu = () => secureFetch(`/getPublicMenu`,'GET', headers)
  *
  */
 
-export const resetPasswordRequest = (data) => secureFetch('/user/password/reset/create', 'POST', headers, JSON.stringify(data))
+export const resetPasswordRequest = (data) => secureFetch('/auth/user/password/reset/create', 'POST', headers, JSON.stringify(data))
   .then(res => res)
   .catch(error => error)
 

@@ -7,7 +7,7 @@ function Home(props) {
   return (
     <SiteWrapper {...props}>
       <Container>
-        <Header.H4 className="mt-4">Client Dashboard</Header.H4>
+        <Header.H4 className="mt-4">Public Dashboard</Header.H4>
 
         <Card
           title="Card title"

@@ -16,7 +16,7 @@ export const secureFetch = (url, method, secureHeaders, data) => (
           if (url !== '/auth/user/login') {
             console.log(`UNAUTHORIZED ${response.status}`)
             localStorage.clear()
-            window.location.pathname = '/login'
+            window.location.pathname = '/user/login'
           }
           break
         case 404:
