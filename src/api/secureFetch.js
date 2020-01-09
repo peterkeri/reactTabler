@@ -51,7 +51,7 @@ export const secureFetch = ({ url, method, secureHeaders, data, dispatch }) =>
           errorStatus(url, response.status);
           formErrorsDispatch(dispatch, json.errors ? json.errors : {});
           serverResponseDispatch(dispatch, json.message, "danger");
-          return reject(response);
+          return reject(json);
         }
       })
       .catch(error => {
