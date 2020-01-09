@@ -1,21 +1,16 @@
 import React from 'react'
-import { 
-    Alert,
-    Form, 
-    Button } from "tabler-react";
+import { Form, Button } from "tabler-react";
+import { NavLink, withRouter } from "react-router-dom";
+import Alert from '../Notifications/Alert'
 
 
-const ResetPasswordRequestForm = ({ serverError, formErrors, email, handleSubmit, onChangeHandler }) => {
+const ResetPasswordRequestForm = ({ serverResponse, formErrors, email, handleSubmit, onChangeHandler }) => {
    const onChange = (e) => onChangeHandler(e)
    const onSubmit = (e) => handleSubmit(e)
 
    return (
     <Form onSubmit={onSubmit}>
-        {serverError ? 
-            <Alert type="danger" icon="alert-triangle">
-                {serverError}
-            </Alert> : null }
-
+        <Alert />
         <Form.StaticText className="small pb-5">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
         Quisque sapien velit, aliquet eget commodo nec, auctor a 
@@ -44,7 +39,8 @@ const ResetPasswordRequestForm = ({ serverError, formErrors, email, handleSubmit
 
         <Form.Group label="" className="text-right">
             <Button.List>
-                <Button type="submit" size="sm" color="info">Request password reset</Button>
+                <Button size="sm" color="primary" RootComponent= { withRouter(NavLink) } to= { "/user/login"} >Back</Button>
+                <Button type="submit" size="sm" color="primary">Request password reset</Button>
             </Button.List>
         </Form.Group>
     </Form>

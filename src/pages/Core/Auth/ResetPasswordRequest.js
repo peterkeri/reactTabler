@@ -2,7 +2,7 @@ import React, {Component} from "react"
 import { Container, Grid, Card } from "tabler-react"
 import { resetPasswordRequest } from '../../../api/queries'
 import ResetPasswordRequestForm from '../../../components/Forms/ResetPasswordRequestForm' 
-
+import { ServerResponseContext } from '../../../context/ServerResponseProvider'
 
 class ResetPasswordRequest extends Component {
     constructor(props) {
@@ -10,51 +10,42 @@ class ResetPasswordRequest extends Component {
         this.state = {
             email: "",
             formErrors: {},
-            serverError: ""
+            serverResponse: ""
         };
     }
-
+    static contextType = ServerResponseContext;
     /**
      * 
      */
     onChangeHandler = e => {
-        const { name: target, value } = e.target;
+      const { name: target, value } = e.target
+      const [{ formErrors }, dispatch] = this.context
 
-        this.setState({
-            [target]: value
-        });
-    };
+      this.setState({
+          [target]: value
+      });
+
+      if(Object.keys(formErrors).length > 0) {
+        dispatch({
+          type: 'updateFormErrors',
+          updateFormErrors: {}
+        })
+      }
+  };
 
     /**
      *
      */
     handleSubmit = e => {
-        e.preventDefault();
-        const data = {email: this.state.email}
-        resetPasswordRequest(data)
-            .then(res => res.json())
-            .then(json => {
-              if (json.success === false) {
-                this.setState({
-                  serverError: json.message,
-                  formErrors: {}
-                })
-              } else if(json.errors) {
-                this.setState({
-                  formErrors: json.errors,
-                  serverError: ""
-                })
-              }
-            })
-            .catch(e => {
-            console.log(e);
-            });
-
-        
+      e.preventDefault();
+      const [, dispatch] = this.context
+      const data = {email: this.state.email}
+      resetPasswordRequest(data, dispatch).then(res => console.log(res))
     };
 
     render() {
-        const { formErrors, serverError, email } = this.state;
+        const { email } = this.state;
+        const [{ formErrors,  serverResponse} ] = this.context;
     
         return (
           <Container className="h-100" >
@@ -67,7 +58,7 @@ class ResetPasswordRequest extends Component {
                   <Card.Body>
                     <ResetPasswordRequestForm 
                       email={email}
-                      serverError={serverError}
+                      serverResponse={serverResponse}
                       formErrors={formErrors} 
                       handleSubmit={this.handleSubmit} 
                       onChangeHandler={this.onChangeHandler} />

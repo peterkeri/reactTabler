@@ -1,14 +1,15 @@
-import React, { Component } from "react";
+import React, { Component } from "react"
 
 import {
   userLogin,
   userRolesByToken,
   userPermissionsByToken
-} from "../../../api/queries";
-import { Redirect } from "react-router-dom";
-import { Container, Grid, Card } from "tabler-react";
-import { isAuthenticated } from "../../../common/common";
+} from "../../../api/queries"
+import { Redirect } from "react-router-dom"
+import { Container, Grid, Card } from "tabler-react"
+import { isAuthenticated } from "../../../common/common"
 import LoginForm from '../../../components/Forms/LoginForm'
+import { ServerResponseContext } from '../../../context/ServerResponseProvider'
 
 class Login extends Component {
   constructor(props) {
@@ -17,19 +18,29 @@ class Login extends Component {
       identity: "",
       password: "",
       formErrors: {},
+      serverResponse: "",
       redirectToReferrer: false
     };
   }
+  static contextType = ServerResponseContext;
 
   /**
    * 
    */
   onChangeHandler = e => {
     const { name: target, value } = e.target;
+    const [{ formErrors }, dispatch] = this.context
 
     this.setState({
       [target]: value
     });
+
+    if(Object.keys(formErrors).length > 0) {
+      dispatch({
+        type: 'updateFormErrors',
+        updateFormErrors: {}
+      })
+    }
   };
 
   /**
@@ -44,7 +55,7 @@ class Login extends Component {
     };
 
     const login = this.login(formValues);
-
+    
     login
       .then(async values => {
         if(isAuthenticated()) {
@@ -53,9 +64,9 @@ class Login extends Component {
           return { roles, perms};
         }
       })
-      .then(({ roles, perms }) => {
-        this.setRolesToLocalStorage(roles ? roles : []);
-        this.setPermsToLocalStorage(perms ? perms : []);
+      .then((data) => {
+        this.setRolesToLocalStorage(data.roles ? data.roles : []);
+        this.setPermsToLocalStorage(data.perms ? data.perms : []);
         this.setState({
           redirectToReferrer: true
         });
@@ -96,21 +107,17 @@ class Login extends Component {
   /**
    *
    */
-  login = data =>
-    userLogin(data)
-      .then(res => res.json())
+  login = data => {
+    const [, dispatch] = this.context
+    return userLogin(data, dispatch)
       .then(json => {
         if (json.hasOwnProperty('success')) {
           this.setBaseDataToLocalStorage(json.data)
-          return json.data
-        } else {
-          this.setState({
-            formErrors: json.errors,
-          })
-          return json.errors
         }
+        return json.data
       })
       .catch(error => error);
+  }
 
   /**
    *
@@ -133,7 +140,8 @@ class Login extends Component {
   render() {
     const { location } = this.props;
     const { from } = location.state || { from: { pathname: "/customer/" } };
-    const { redirectToReferrer, formErrors, identity, password} = this.state;
+    const { redirectToReferrer, identity, password} = this.state
+    const [ { formErrors} ] = this.context;
 
     if (redirectToReferrer) {
       return <Redirect to={from.pathname} />;
@@ -145,7 +153,7 @@ class Login extends Component {
           <Grid.Col md={6}>
             <Card>
               <Card.Header>
-                <Card.Title>Login</Card.Title>
+                <Card.Title>Sign in</Card.Title>
               </Card.Header>
               <Card.Body>
                 <LoginForm 

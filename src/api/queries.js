@@ -1,9 +1,8 @@
 import { secureFetch } from './secureFetch'
-/* global localStorage */
-/**
- * GARNET API queries
- */
+import ServerResponseContext from '../context/ServerResponseProvider'
+import { useContext } from 'react'
 
+//const [, dispatch] = useContext(ServerResponseContext)
 
 const headersWidthAuth = (tokenType, accessToken) => ({
   'Authorization': `${tokenType} ${accessToken}`,
@@ -24,9 +23,47 @@ const headers = {
  *
  */
 
-export const userLogin = (data) => secureFetch('/auth/user/login', 'POST', headers, JSON.stringify(data))
-  .then(res => res)
-  .catch(error => error)
+export const userLogin = (data, dispatch) => secureFetch('/auth/user/login', 'POST', headers, JSON.stringify(data))
+.then(res => res.json())
+.then(json => {
+  dispatch({
+    type: 'updateServerResponse',
+    updateResponse: {
+      type: "success",
+      message: json.message
+    }
+  })
+
+  dispatch({
+    type: 'updateFormErrors',
+    updateFormErrors: {}
+  })
+  
+  return json 
+})
+.catch(async e => {
+  const error = await e.json()  
+
+  if(error.errors) {
+    dispatch({
+      type: 'updateFormErrors',
+      updateFormErrors: error.errors
+    })
+  } else {
+    dispatch({
+      type: 'updateFormErrors',
+      updateFormErrors: {}
+    })
+  }
+
+  dispatch({
+    type: 'updateServerResponse',
+    updateResponse: {
+      type: "danger",
+      message: error.message
+    }
+  })
+})
 
 /**
  *
@@ -89,9 +126,47 @@ export const getAuthenticatedMenu = () => (
  *
  */
 
-export const resetPasswordRequest = (data) => secureFetch('/auth/user/password/reset/create', 'POST', headers, JSON.stringify(data))
-  .then(res => res)
-  .catch(error => error)
+export const resetPasswordRequest = (data, dispatch) => secureFetch('/auth/user/password/reset/create', 'POST', headers, JSON.stringify(data))
+  .then(res => res.json())
+  .then(json => {
+    dispatch({
+      type: 'updateServerResponse',
+      updateResponse: {
+        type: "success",
+        message: json.message
+      }
+    })
+
+    dispatch({
+      type: 'updateFormErrors',
+      updateFormErrors: {}
+    })
+    
+    return json 
+  })
+  .catch(async e => {
+    const error = await e.json()  
+
+    if(error.errors) {
+      dispatch({
+        type: 'updateFormErrors',
+        updateFormErrors: error.errors
+      })
+    } else {
+      dispatch({
+        type: 'updateFormErrors',
+        updateFormErrors: {}
+      })
+    }
+
+    dispatch({
+      type: 'updateServerResponse',
+      updateResponse: {
+        type: "danger",
+        message: error.message
+      }
+    })
+  })
 
 /**
  * 
