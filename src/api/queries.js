@@ -1,20 +1,18 @@
-import { secureFetch } from './secureFetch'
-import ServerResponseContext from '../context/ServerResponseProvider'
-import { useContext } from 'react'
+import { secureFetch } from "./secureFetch";
 
 //const [, dispatch] = useContext(ServerResponseContext)
 
 const headersWidthAuth = (tokenType, accessToken) => ({
-  'Authorization': `${tokenType} ${accessToken}`,
-  'Accept': 'application/json',
-  'X-Requested-With': 'XMLHttpRequest',
-  'Content-Type': 'application/json'
-})
+  Authorization: `${tokenType} ${accessToken}`,
+  Accept: "application/json",
+  "X-Requested-With": "XMLHttpRequest",
+  "Content-Type": "application/json"
+});
 const headers = {
-  'Accept': 'application/json',
-  'X-Requested-With': 'XMLHttpRequest',
-  'Content-Type': 'application/json'
-}
+  Accept: "application/json",
+  "X-Requested-With": "XMLHttpRequest",
+  "Content-Type": "application/json"
+};
 
 /**
  * User login
@@ -23,47 +21,16 @@ const headers = {
  *
  */
 
-export const userLogin = (data, dispatch) => secureFetch('/auth/user/login', 'POST', headers, JSON.stringify(data))
-.then(res => res.json())
-.then(json => {
-  dispatch({
-    type: 'updateServerResponse',
-    updateResponse: {
-      type: "success",
-      message: json.message
-    }
+export const userLogin = (data, dispatch) =>
+  secureFetch({
+    url: "/auth/user/login",
+    method: "POST",
+    secureHeaders: headers,
+    data: JSON.stringify(data),
+    dispatch
   })
-
-  dispatch({
-    type: 'updateFormErrors',
-    updateFormErrors: {}
-  })
-  
-  return json 
-})
-.catch(async e => {
-  const error = await e.json()  
-
-  if(error.errors) {
-    dispatch({
-      type: 'updateFormErrors',
-      updateFormErrors: error.errors
-    })
-  } else {
-    dispatch({
-      type: 'updateFormErrors',
-      updateFormErrors: {}
-    })
-  }
-
-  dispatch({
-    type: 'updateServerResponse',
-    updateResponse: {
-      type: "danger",
-      message: error.message
-    }
-  })
-})
+    .then(res => res)
+    .catch(e => console.log(e));
 
 /**
  *
@@ -71,53 +38,82 @@ export const userLogin = (data, dispatch) => secureFetch('/auth/user/login', 'PO
  *
  */
 
-export const userLogout = () => (
-  secureFetch('/auth/user/logout', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+export const userLogout = () =>
+  secureFetch({
+    url: "/auth/user/logout",
+    method: "POST",
+    secureHeaders: headersWidthAuth(
+      localStorage.getItem("token_type"),
+      localStorage.getItem("access_token")
+    )
+  })
     .then(res => res)
-    .catch(error => error)
-
-)
+    .catch(error => error);
 
 /**
- * 
+ *
  */
-export const userDataByToken = () => (
-  secureFetch('/auth/user/dataByToken', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+export const userDataByToken = () =>
+  secureFetch({
+    url: "/auth/user/dataByToken",
+    method: "POST",
+    secureHeaders: headersWidthAuth(
+      localStorage.getItem("token_type"),
+      localStorage.getItem("access_token")
+    )
+  })
     .then(res => res)
-    .catch(error => error)
-)
+    .catch(error => error);
 
 /**
- * 
+ *
  */
-export const userRolesByToken = () => (
-  secureFetch('/auth/user/rolesByToken', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+export const userRolesByToken = () =>
+  secureFetch({
+    url: "/auth/user/rolesByToken",
+    method: "POST",
+    secureHeaders: headersWidthAuth(
+      localStorage.getItem("token_type"),
+      localStorage.getItem("access_token")
+    )
+  })
     .then(res => res)
-    .catch(error => error)
-)
+    .catch(error => error);
 
 /**
- * 
+ *
  */
-export const userPermissionsByToken = () => (
-  secureFetch('/auth/user/permissionsByToken', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+export const userPermissionsByToken = () =>
+  secureFetch({
+    url: "/auth/user/permissionsByToken",
+    method: "POST",
+    secureHeaders: headersWidthAuth(
+      localStorage.getItem("token_type"),
+      localStorage.getItem("access_token")
+    )
+  })
     .then(res => res)
-    .catch(error => error)
-)
+    .catch(error => error);
 
 /**
- * 
+ *
  */
-export const getPublicMenu = () => secureFetch(`/getPublicMenu`,'GET', headers)
-  .then(res => res)
-  .catch(error => error)
-
-
-export const getAuthenticatedMenu = () => ( 
-  secureFetch('/getAuthenticatedMenu', 'POST', headersWidthAuth(localStorage.getItem('token_type'), localStorage.getItem('access_token')))
+export const getPublicMenu = () =>
+  secureFetch({ url: `/getPublicMenu`, method: "GET", secureHeaders: headers })
     .then(res => res)
-    .catch(error => error)
-)
+    .catch(error => error);
+
+export const getAuthenticatedMenu = () =>
+  secureFetch({
+    url: "/getAuthenticatedMenu",
+    method: "POST",
+    secureHeaders: headersWidthAuth(
+      localStorage.getItem("token_type"),
+      localStorage.getItem("access_token")
+    )
+  })
+    .then(res => res)
+    .catch(error => error);
 
 /**
  * User reset password
@@ -126,56 +122,30 @@ export const getAuthenticatedMenu = () => (
  *
  */
 
-export const resetPasswordRequest = (data, dispatch) => secureFetch('/auth/user/password/reset/create', 'POST', headers, JSON.stringify(data))
-  .then(res => res.json())
-  .then(json => {
-    dispatch({
-      type: 'updateServerResponse',
-      updateResponse: {
-        type: "success",
-        message: json.message
-      }
-    })
-
-    dispatch({
-      type: 'updateFormErrors',
-      updateFormErrors: {}
-    })
-    
-    return json 
+export const resetPasswordRequest = (data, dispatch) =>
+  secureFetch({
+    url: "/auth/user/password/reset/create",
+    method: "POST",
+    secureHeaders: headers,
+    data: JSON.stringify(data),
+    dispatch
   })
-  .catch(async e => {
-    const error = await e.json()  
-
-    if(error.errors) {
-      dispatch({
-        type: 'updateFormErrors',
-        updateFormErrors: error.errors
-      })
-    } else {
-      dispatch({
-        type: 'updateFormErrors',
-        updateFormErrors: {}
-      })
-    }
-
-    dispatch({
-      type: 'updateServerResponse',
-      updateResponse: {
-        type: "danger",
-        message: error.message
-      }
-    })
-  })
+    .then(res => res)
+    .catch(e => e);
 
 /**
- * 
- * @param {*} token 
+ *
+ * @param {*} token
  */
 
-export const userActivate = (token) => secureFetch(`/user/signup/activate/${token}`,'GET', headers)
-  .then(res => res)
-  .catch(error => error)
+export const userActivate = token =>
+  secureFetch({
+    url: `/user/signup/activate/${token}`,
+    method: "GET",
+    secureHeaders: headers
+  })
+    .then(res => res)
+    .catch(error => error);
 
 /**
  * Find user by token
@@ -184,9 +154,14 @@ export const userActivate = (token) => secureFetch(`/user/signup/activate/${toke
  *
  */
 
-export const findByToken = (token) => secureFetch(`/user/password/reset/find/${token}`,'GET', headers)
-  .then(res => res)
-  .catch(error => error)
+export const findByToken = token =>
+  secureFetch({
+    url: `/user/password/reset/find/${token}`,
+    method: "GET",
+    secureHeaders: headers
+  })
+    .then(res => res)
+    .catch(error => error);
 
 /**
  * Reset Password
@@ -194,9 +169,15 @@ export const findByToken = (token) => secureFetch(`/user/password/reset/find/${t
  *
  */
 
-export const resetPassword = (data) => secureFetch('/user/password/reset', 'POST', headers, JSON.stringify(data))
-  .then(res => res)
-  .catch(error => error)
+export const resetPassword = data =>
+  secureFetch({
+    url: "/user/password/reset",
+    method: "POST",
+    secureHeaders: headers,
+    data: JSON.stringify(data)
+  })
+    .then(res => res)
+    .catch(error => error);
 
 /**
  * User Sign up
@@ -205,6 +186,12 @@ export const resetPassword = (data) => secureFetch('/user/password/reset', 'POST
  *
  */
 
-export const userSignup = (data) => secureFetch('/user/signup', 'POST', headers, JSON.stringify(data))
-  .then(res => res)
-  .catch(error => error)
+export const userSignup = data =>
+  secureFetch({
+    url: "/user/signup",
+    method: "POST",
+    secureHeaders: headers,
+    data: JSON.stringify(data)
+  })
+    .then(res => res)
+    .catch(error => error);
