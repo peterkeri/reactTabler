@@ -16,15 +16,17 @@ import { isAuthenticated } from "../common/common";
 import { userDataByToken, getPublicMenu, getAuthenticatedMenu, userLogout } from "../api/queries";
 import LoginButton from './Buttons/LoginButton'
 import TablerLogo from '../assets/images/tabler.svg'
+import { ServerResponseContext } from '../context/ServerResponseProvider'
 
 class SiteWrapper extends Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = {
       userData: {},
       publicMenu: [],
       authenticatedMenu: []
     };
+    this.dispatch = context[1]
   }
 
   componentDidMount() {
@@ -36,24 +38,24 @@ class SiteWrapper extends Component {
    * get user data
    */
   userData = () =>
-    userDataByToken()
-      .then(res => res.json())
-      .then(({ data: userData }) => this.setState({ userData }))
+    userDataByToken(this.dispatch)
+      .then(({ data: userData }) => {
+        console.log(userData)
+        this.setState({ userData })
+      })
       .catch(error => error);
 
   /**
    * get public menu items
    */
   publicMenu = () =>
-    getPublicMenu()
-      .then(res => res.json())
+    getPublicMenu(this.dispatch)
       .then(({ data: publicMenu }) => this.setState({ publicMenu }))
       .catch(error => error);
 
   
   authenticatedMenu = () => 
-    getAuthenticatedMenu()
-      .then(res => res.json())
+    getAuthenticatedMenu(this.dispatch)
       .then(({ data: authenticatedMenu }) => this.setState({ authenticatedMenu }))
       .catch(error => error);
 
@@ -64,7 +66,7 @@ class SiteWrapper extends Component {
   logOutHandler = e => {
     const { history } = this.props;
     e.preventDefault();
-    userLogout().then(() => {
+    userLogout(this.dispatch).then(() => {
       localStorage.clear();
       history.push("/");
     });
@@ -191,3 +193,5 @@ class SiteWrapper extends Component {
 }
 
 export default SiteWrapper;
+
+SiteWrapper.contextType = ServerResponseContext;

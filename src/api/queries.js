@@ -38,14 +38,15 @@ export const userLogin = (data, dispatch) =>
  *
  */
 
-export const userLogout = () =>
+export const userLogout = (dispatch) =>
   secureFetch({
     url: "/auth/user/logout",
     method: "POST",
     secureHeaders: headersWidthAuth(
       localStorage.getItem("token_type"),
       localStorage.getItem("access_token")
-    )
+    ),
+    dispatch
   })
     .then(res => res)
     .catch(error => error);
@@ -53,29 +54,35 @@ export const userLogout = () =>
 /**
  *
  */
-export const userDataByToken = () =>
+export const userDataByToken = (dispatch) =>
   secureFetch({
     url: "/auth/user/dataByToken",
     method: "POST",
     secureHeaders: headersWidthAuth(
       localStorage.getItem("token_type"),
       localStorage.getItem("access_token")
-    )
+    ),
+    dispatch
   })
-    .then(res => res)
-    .catch(error => error);
+    .then(res => {
+      console.log(res)
+    })
+    .catch(error => {
+      console.log(error)
+    });
 
 /**
  *
  */
-export const userRolesByToken = () =>
+export const userRolesByToken = (dispatch) =>
   secureFetch({
     url: "/auth/user/rolesByToken",
     method: "POST",
     secureHeaders: headersWidthAuth(
       localStorage.getItem("token_type"),
       localStorage.getItem("access_token")
-    )
+    ),
+    dispatch
   })
     .then(res => res)
     .catch(error => error);
@@ -83,14 +90,15 @@ export const userRolesByToken = () =>
 /**
  *
  */
-export const userPermissionsByToken = () =>
+export const userPermissionsByToken = (dispatch) =>
   secureFetch({
     url: "/auth/user/permissionsByToken",
     method: "POST",
     secureHeaders: headersWidthAuth(
       localStorage.getItem("token_type"),
       localStorage.getItem("access_token")
-    )
+    ),
+    dispatch
   })
     .then(res => res)
     .catch(error => error);
@@ -98,19 +106,28 @@ export const userPermissionsByToken = () =>
 /**
  *
  */
-export const getPublicMenu = () =>
-  secureFetch({ url: `/getPublicMenu`, method: "GET", secureHeaders: headers })
+export const getPublicMenu = (dispatch) =>
+  secureFetch({ 
+    url: `/getPublicMenu`, 
+    method: "GET", 
+    secureHeaders: headers,
+    dispatch
+  })
     .then(res => res)
     .catch(error => error);
 
-export const getAuthenticatedMenu = () =>
+/**
+ * 
+ */
+export const getAuthenticatedMenu = (dispatch) =>
   secureFetch({
     url: "/getAuthenticatedMenu",
     method: "POST",
     secureHeaders: headersWidthAuth(
       localStorage.getItem("token_type"),
       localStorage.getItem("access_token")
-    )
+    ),
+    dispatch
   })
     .then(res => res)
     .catch(error => error);
@@ -138,11 +155,12 @@ export const resetPasswordRequest = (data, dispatch) =>
  * @param {*} token
  */
 
-export const userActivate = token =>
+export const userActivate = (token, dispatch) =>
   secureFetch({
     url: `/user/signup/activate/${token}`,
     method: "GET",
-    secureHeaders: headers
+    secureHeaders: headers,
+    dispatch
   })
     .then(res => res)
     .catch(error => error);
@@ -154,11 +172,12 @@ export const userActivate = token =>
  *
  */
 
-export const findByToken = token =>
+export const findByToken = (token, dispatch) =>
   secureFetch({
-    url: `/user/password/reset/find/${token}`,
+    url: `/auth/user/password/reset/validate/${token}`,
     method: "GET",
-    secureHeaders: headers
+    secureHeaders: headers,
+    dispatch
   })
     .then(res => res)
     .catch(error => error);
@@ -169,12 +188,13 @@ export const findByToken = token =>
  *
  */
 
-export const resetPassword = data =>
+export const resetPassword = (data, dispatch) =>
   secureFetch({
-    url: "/user/password/reset",
+    url: "/auth/user/password/change",
     method: "POST",
     secureHeaders: headers,
-    data: JSON.stringify(data)
+    data: JSON.stringify(data),
+    dispatch
   })
     .then(res => res)
     .catch(error => error);
@@ -186,12 +206,13 @@ export const resetPassword = data =>
  *
  */
 
-export const userSignup = data =>
+export const userSignup = (data, dispatch) =>
   secureFetch({
     url: "/user/signup",
     method: "POST",
     secureHeaders: headers,
-    data: JSON.stringify(data)
+    data: JSON.stringify(data),
+    dispatch
   })
     .then(res => res)
     .catch(error => error);

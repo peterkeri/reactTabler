@@ -9,7 +9,6 @@ const updateServerResponse = (state, { updateResponse }) => {
 }
 
 const updateFormErrors = (state, { updateFormErrors }) => {
-    console.log(updateFormErrors)
     return {
         ...state,
         formErrors: updateFormErrors

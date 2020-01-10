@@ -12,8 +12,8 @@ import LoginForm from '../../../components/Forms/LoginForm'
 import { ServerResponseContext } from '../../../context/ServerResponseProvider'
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = {
       identity: "",
       password: "",
@@ -21,9 +21,12 @@ class Login extends Component {
       serverResponse: "",
       redirectToReferrer: false
     };
+    this.dispatch = context[1]
   }
-  static contextType = ServerResponseContext;
 
+  componentDidMount() {
+    isAuthenticated() && this.setState({redirectToReferrer: true})
+  }
   /**
    * 
    */
@@ -108,8 +111,7 @@ class Login extends Component {
    *
    */
   login = data => {
-    const [, dispatch] = this.context
-    return userLogin(data, dispatch)
+    return userLogin(data, this.dispatch)
       .then(json => {
         if (json.hasOwnProperty('success')) {
           this.setBaseDataToLocalStorage(json.data)
@@ -122,18 +124,18 @@ class Login extends Component {
   /**
    *
    */
-  roles = () =>
-    userRolesByToken()
-      .then(res => res.json())
-      .then(json => json)
-      .catch(error => error);
+  roles = () => {
+    return userRolesByToken(this.dispatch)
+    .then(json => json)
+    .catch(error => error);
+  }
+    
 
   /**
    *
    */
   perms = () =>
-    userPermissionsByToken()
-      .then(res => res.json())
+    userPermissionsByToken(this.dispatch)
       .then(json => json)
       .catch(error => error);
 
@@ -172,3 +174,5 @@ class Login extends Component {
 }
 
 export default Login;
+
+Login.contextType = ServerResponseContext;

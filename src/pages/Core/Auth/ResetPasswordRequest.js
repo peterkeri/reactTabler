@@ -5,15 +5,16 @@ import ResetPasswordRequestForm from "../../../components/Forms/ResetPasswordReq
 import { ServerResponseContext } from "../../../context/ServerResponseProvider";
 
 class ResetPasswordRequest extends Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = {
       email: "",
       formErrors: {},
       serverResponse: ""
     };
+    this.dispatch = context[1]
   }
-  static contextType = ServerResponseContext;
+ 
   /**
    *
    */
@@ -73,3 +74,5 @@ class ResetPasswordRequest extends Component {
 }
 
 export default ResetPasswordRequest;
+
+ResetPasswordRequest.contextType = ServerResponseContext;

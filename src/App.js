@@ -10,6 +10,8 @@ import PublicHome from "./pages/Public/Home";
 import ProtectedHome from "./pages/Protected/Home";
 import Login from "./pages/Core/Auth/Login";
 import ResetPasswordRequest from './pages/Core/Auth/ResetPasswordRequest'
+import ResetPasswordCheckToken from './pages/Core/Auth/ResetPasswordCheckToken'
+import ResetPassword from './pages/Core/Auth/ResetPassword'
 import { Error404Page } from "tabler-react";
 import { isAuthenticated } from "./common/common";
 import { errorReducer } from './reducer/errorReducer'
@@ -54,6 +56,8 @@ function App() {
         <Route exact path="/" component={ PublicHome} />
         <Route path="/user/login" component={Login} />
         <Route path="/user/request/password/reset" component={ResetPasswordRequest} />
+        <Route path="/user/request/password/check/:token" component={ResetPasswordCheckToken} />
+        <Route path="/user/password/reset" component={ResetPassword} />
         <PrivateRoute path="/customer/" exact component={ProtectedHome} />
         <Route component={Error404Page} />
       </Switch>
