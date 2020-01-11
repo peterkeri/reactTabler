@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-unused-vars */
-import React, { Component } from "react";
-import { NavLink, withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import { NavLink, withRouter } from 'react-router-dom';
 
 import {
   Site,
@@ -10,13 +10,15 @@ import {
   List,
   Button,
   RouterContextProvider
-} from "tabler-react";
+} from 'tabler-react';
 
-import { isAuthenticated } from "../common/common";
-import { userDataByToken, getPublicMenu, getAuthenticatedMenu, userLogout } from "../api/queries";
-import LoginButton from './Buttons/LoginButton'
-import TablerLogo from '../assets/images/tabler.svg'
-import { ServerResponseContext } from '../context/ServerResponseProvider'
+import { isAuthenticated } from '../common/common';
+import {
+  userDataByToken, getPublicMenu, getAuthenticatedMenu, userLogout
+} from '../api/queries';
+import LoginButton from './Buttons/LoginButton';
+import TablerLogo from '../assets/images/tabler.svg';
+import { ServerResponseContext } from '../context/ServerResponseProvider';
 
 class SiteWrapper extends Component {
   constructor(props, context) {
@@ -26,7 +28,7 @@ class SiteWrapper extends Component {
       publicMenu: [],
       authenticatedMenu: []
     };
-    this.dispatch = context[1]
+    this.dispatch = context[1];
   }
 
   componentDidMount() {
@@ -40,10 +42,10 @@ class SiteWrapper extends Component {
   userData = () =>
     userDataByToken(this.dispatch)
       .then(({ data: userData }) => {
-        console.log(userData)
-        this.setState({ userData })
+        console.log(userData);
+        this.setState({ userData });
       })
-      .catch(error => error);
+      .catch((error) => error);
 
   /**
    * get public menu items
@@ -51,60 +53,62 @@ class SiteWrapper extends Component {
   publicMenu = () =>
     getPublicMenu(this.dispatch)
       .then(({ data: publicMenu }) => this.setState({ publicMenu }))
-      .catch(error => error);
+      .catch((error) => error);
 
-  
-  authenticatedMenu = () => 
+
+  authenticatedMenu = () =>
     getAuthenticatedMenu(this.dispatch)
       .then(({ data: authenticatedMenu }) => this.setState({ authenticatedMenu }))
-      .catch(error => error);
+      .catch((error) => error);
 
 
   /**
    * log out, clear local storage, rediredt to path
    */
-  logOutHandler = e => {
+  logOutHandler = (e) => {
     const { history } = this.props;
     e.preventDefault();
     userLogout(this.dispatch).then(() => {
       localStorage.clear();
-      history.push("/");
+      history.push('/');
     });
   };
 
   /**
    *
    */
-  accountDropdownProps = ({ email, name }) => {
-    return {
-      avatarURL: "./demo/faces/female/5.jpg",
-      name: email,
-      description: "Click for menu",
-      options: [
-        { icon: "user", value: "Profile" },
-        { icon: "settings", value: "Settings" },
-        { icon: "mail", value: "Inbox", badge: "6" },
-        { icon: "send", value: "Message" },
-        { isDivider: true },
-        { icon: "help-circle", value: "Need help?" },
-        { icon: "log-out", value: "Sign out", onClick: this.logOutHandler }
-      ]
-    };
-  };
+  accountDropdownProps = ({ email, name }) => ({
+    avatarURL: './demo/faces/female/5.jpg',
+    name: email,
+    description: 'Click for menu',
+    options: [
+      { icon: 'user', value: 'Profile' },
+      { icon: 'settings', value: 'Settings' },
+      { icon: 'mail', value: 'Inbox', badge: '6' },
+      { icon: 'send', value: 'Message' },
+      { isDivider: true },
+      { icon: 'help-circle', value: 'Need help?' },
+      { icon: 'log-out', value: 'Sign out', onClick: this.logOutHandler }
+    ]
+  });
 
-  navBarItems = menuItems =>
-    menuItems.map(({ name, description, icon, path, children }) => {
+  navBarItems = (menuItems) =>
+    menuItems.map(({
+      name, description, icon, path, children
+    }) => {
       const menuItem = {
         value: name,
-        icon: icon,
+        icon,
         useExact: true
       };
 
       if (children.length > 0) {
-        const subItems = children.map(({ name, description, icon, path }) => ({
+        const subItems = children.map(({
+          name, description, icon, path
+        }) => ({
           value: name,
           to: path,
-          icon: icon,
+          icon,
           LinkComponent: withRouter(NavLink),
           useExact: true
         }));
@@ -121,8 +125,8 @@ class SiteWrapper extends Component {
     return (
       <Site.Wrapper
         headerProps={{
-          href: "/",
-          alt: "Tabler React",
+          href: '/',
+          alt: 'Tabler React',
           imageURL: TablerLogo,
           navItems: !isAuthenticated() && <LoginButton />,
           accountDropdown: isAuthenticated()
@@ -143,25 +147,27 @@ class SiteWrapper extends Component {
             <a href="#">Eigth Link</a>
           ],
           note:
-            "Premium and Open Source dashboard template with responsive and high quality UI. For Free!",
+            'Premium and Open Source dashboard template with responsive and high quality UI. For Free!',
           copyright: (
             <>
               Copyright © 2019
-              <a href="."> Tabler-react</a>. Theme by
+              <a href="."> Tabler-react</a>
+. Theme by
               <a
                 href="https://codecalm.net"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {" "}
+                {' '}
                 codecalm.net
-              </a>{" "}
+              </a>
+              {' '}
               All rights reserved.
             </>
           ),
           nav: (
-            <React.Fragment>
-              <Grid.Col auto={true}>
+            <>
+              <Grid.Col auto>
                 <List className="list-inline list-inline-dots mb-0">
                   <List.Item className="list-inline-item">
                     <a href="./docs/index.html">Documentation</a>
@@ -171,7 +177,7 @@ class SiteWrapper extends Component {
                   </List.Item>
                 </List>
               </Grid.Col>
-              <Grid.Col auto={true}>
+              <Grid.Col auto>
                 <Button
                   href="https://github.com/tabler/tabler-react"
                   size="sm"
@@ -182,7 +188,7 @@ class SiteWrapper extends Component {
                   Source code
                 </Button>
               </Grid.Col>
-            </React.Fragment>
+            </>
           )
         }}
       >

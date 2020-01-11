@@ -1,34 +1,32 @@
-import React, { Component } from "react";
-import { Container, Grid, Card } from "tabler-react";
-import { resetPasswordRequest } from "../../../api/queries";
-import ResetPasswordRequestForm from "../../../components/Forms/ResetPasswordRequestForm";
-import { ServerResponseContext } from "../../../context/ServerResponseProvider";
+import React, { Component } from 'react';
+import { Container, Grid, Card } from 'tabler-react';
+import { resetPasswordRequest } from '../../../api/queries';
+import ResetPasswordRequestForm from '../../../components/Forms/ResetPasswordRequestForm';
+import { ServerResponseContext } from '../../../context/ServerResponseProvider';
 
 class ResetPasswordRequest extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      email: "",
-      formErrors: {},
-      serverResponse: ""
+      email: '',
     };
-    this.dispatch = context[1]
+    [, this.dispatch] = context;
   }
- 
+
   /**
    *
    */
-  onChangeHandler = e => {
+  onChangeHandler = (e) => {
     const { name: target, value } = e.target;
-    const [{ formErrors }, dispatch] = this.context;
+    const [{ formErrors }] = this.context;
 
     this.setState({
       [target]: value
     });
 
     if (Object.keys(formErrors).length > 0) {
-      dispatch({
-        type: "updateFormErrors",
+      this.dispatch({
+        type: 'updateFormErrors',
         updateFormErrors: {}
       });
     }
@@ -37,11 +35,11 @@ class ResetPasswordRequest extends Component {
   /**
    *
    */
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault();
-    const [, dispatch] = this.context;
-    const data = { email: this.state.email };
-    resetPasswordRequest(data, dispatch).then(res => console.log(res));
+    const { email } = this.state;
+    const data = { email };
+    resetPasswordRequest(data, this.dispatch).then((res) => console.log(res));
   };
 
   render() {
