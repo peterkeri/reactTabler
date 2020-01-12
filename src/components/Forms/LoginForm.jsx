@@ -1,21 +1,21 @@
 import React from 'react'
-import { Form, Button } from 'tabler-react'
 import { NavLink, withRouter } from 'react-router-dom'
+import { Form, Button } from 'tabler-react'
 import Alert from '../Notifications/Alert'
 
-const ResetPasswordRequestForm = ({
-  serverResponse,
+const LoginForm = ({
   formErrors,
-  email,
+  identity,
+  password,
   handleSubmit,
   onChangeHandler
 }) => {
   const onChange = (e) => onChangeHandler(e)
   const onSubmit = (e) => handleSubmit(e)
-
   return (
     <Form onSubmit={onSubmit}>
       <Alert />
+
       <Form.StaticText className="small pb-5">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sapien
         velit, aliquet eget commodo nec, auctor a sapien. Nam eu neque vulputate
@@ -32,10 +32,24 @@ const ResetPasswordRequestForm = ({
         <Form.Input
           icon="user"
           size="sm"
-          name="email"
-          error={formErrors.email && formErrors.email[0]}
-          placeholder="Email"
-          value={email}
+          name="identity"
+          error={formErrors.identity && formErrors.identity[0]}
+          placeholder="Email or Client number"
+          value={identity}
+          onChange={onChange}
+        />
+      </Form.Group>
+
+      <Form.Group label="">
+        <Form.Input
+          icon="lock"
+          type="password"
+          size="sm"
+          name="password"
+          error={formErrors.password && formErrors.password[0]}
+          invalid={!!(formErrors.password && formErrors.password[0])}
+          value={password}
+          placeholder="Password"
           onChange={onChange}
         />
       </Form.Group>
@@ -44,14 +58,14 @@ const ResetPasswordRequestForm = ({
         <Button.List>
           <Button
             size="sm"
-            color="primary"
+            color="info"
             RootComponent={withRouter(NavLink)}
-            to="/user/login"
+            to="/user/request/password/reset"
           >
-            Back
+            Forgot password?
           </Button>
-          <Button type="submit" size="sm" color="primary">
-            Request password reset
+          <Button type="submit" size="sm" color="info">
+            Login
           </Button>
         </Button.List>
       </Form.Group>
@@ -59,4 +73,4 @@ const ResetPasswordRequestForm = ({
   )
 }
 
-export default ResetPasswordRequestForm
+export default LoginForm

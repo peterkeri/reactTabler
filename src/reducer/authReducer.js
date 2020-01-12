@@ -1,9 +1,6 @@
 import {
-  isAuthenticated,
-  setBaseDataToLocalStorage,
-  setRolesToLocalStorage,
-  setPermsToLocalStorage
-} from '../common/common';
+  setBaseDataToLocalStorage
+} from '../common/common'
 
 const reset = () => ({
   access_token: '',
@@ -11,23 +8,30 @@ const reset = () => ({
   expires_at: '',
   roles: [],
   premissions: []
-});
+})
+
 const setToken = (state, { updateToken }) => {
-  setBaseDataToLocalStorage(updateToken);
-  return ({ ...state, ...updateToken });
-};
+  setBaseDataToLocalStorage(updateToken)
+  return ({ ...state, ...updateToken })
+}
+
+const setRoles = (state, { updateRoles }) => ({ ...state, roles: updateRoles })
+
+const setPerms = (state, { updatePerms }) => ({ ...state, permissions: updatePerms })
 
 const actions = {
   reset,
-  setToken
-};
+  setToken,
+  setRoles,
+  setPerms
+}
 
 const authReducer = (state, action) => {
   if (action && action.type && actions[action.type]) {
-    return actions[action.type](state, action);
+    return actions[action.type](state, action)
   }
-  return { ...state };
-};
+  return { ...state }
+}
 
 
-export default authReducer;
+export default authReducer

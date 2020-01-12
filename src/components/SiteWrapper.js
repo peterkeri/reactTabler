@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable no-unused-vars */
-import React, { Component } from 'react';
-import { NavLink, withRouter } from 'react-router-dom';
+import React, { Component } from 'react'
+import { NavLink, withRouter } from 'react-router-dom'
 
 import {
   Site,
@@ -10,30 +10,31 @@ import {
   List,
   Button,
   RouterContextProvider
-} from 'tabler-react';
+} from 'tabler-react'
 
-import { isAuthenticated } from '../common/common';
+import { isAuthenticated } from '../common/common'
 import {
   userDataByToken, getPublicMenu, getAuthenticatedMenu, userLogout
-} from '../api/queries';
-import LoginButton from './Buttons/LoginButton';
-import TablerLogo from '../assets/images/tabler.svg';
-import { ServerResponseContext } from '../context/ServerResponseProvider';
+} from '../api/queries'
+import LoginButton from './Buttons/LoginButton'
+import TablerLogo from '../assets/images/tabler.svg'
+import { ServerResponseContext } from '../context/ServerResponseProvider'
+import AuthWrapper from './AuthWrapper'
 
 class SiteWrapper extends Component {
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
     this.state = {
       userData: {},
       publicMenu: [],
       authenticatedMenu: []
-    };
-    this.dispatch = context[1];
+    }
+    this.dispatch = context[1]
   }
 
   componentDidMount() {
-    this.publicMenu();
-    isAuthenticated() && this.userData();
+    this.publicMenu()
+    isAuthenticated() && this.userData()
   }
 
   /**
@@ -42,8 +43,8 @@ class SiteWrapper extends Component {
   userData = () =>
     userDataByToken(this.dispatch)
       .then(({ data: userData }) => {
-        console.log(userData);
-        this.setState({ userData });
+        console.log(userData)
+        this.setState({ userData })
       })
       .catch((error) => error);
 
@@ -66,12 +67,12 @@ class SiteWrapper extends Component {
    * log out, clear local storage, rediredt to path
    */
   logOutHandler = (e) => {
-    const { history } = this.props;
-    e.preventDefault();
+    const { history } = this.props
+    e.preventDefault()
     userLogout(this.dispatch).then(() => {
-      localStorage.clear();
-      history.push('/');
-    });
+      localStorage.clear()
+      history.push('/')
+    })
   };
 
   /**
@@ -100,7 +101,7 @@ class SiteWrapper extends Component {
         value: name,
         icon,
         useExact: true
-      };
+      }
 
       if (children.length > 0) {
         const subItems = children.map(({
@@ -111,16 +112,16 @@ class SiteWrapper extends Component {
           icon,
           LinkComponent: withRouter(NavLink),
           useExact: true
-        }));
-        return { ...menuItem, subItems };
+        }))
+        return { ...menuItem, subItems }
       }
-      return { ...menuItem, LinkComponent: withRouter(NavLink), to: path };
+      return { ...menuItem, LinkComponent: withRouter(NavLink), to: path }
     });
 
   signInButton = () => {};
 
   render() {
-    const { userData, publicMenu, authenticatedMenu } = this.state;
+    const { userData, publicMenu, authenticatedMenu } = this.state
 
     return (
       <Site.Wrapper
@@ -194,10 +195,10 @@ class SiteWrapper extends Component {
       >
         {this.props.children}
       </Site.Wrapper>
-    );
+    )
   }
 }
 
-export default SiteWrapper;
+export default AuthWrapper(SiteWrapper)
 
-SiteWrapper.contextType = ServerResponseContext;
+SiteWrapper.contextType = ServerResponseContext

@@ -1,58 +1,58 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
-import { Container, Grid, Card } from 'tabler-react';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Redirect } from 'react-router-dom'
+import { Container, Grid, Card } from 'tabler-react'
 import {
   userLogin,
   userRolesByToken,
   userPermissionsByToken
-} from '../../../api/queries';
-import {
-  isAuthenticated,
-  setRolesToLocalStorage,
-  setPermsToLocalStorage
-} from '../../../common/common';
-import LoginForm from '../../../components/Forms/LoginForm';
-import AuthWrapper from '../../../components/AuthWrapper';
-import { ServerResponseContext } from '../../../context/ServerResponseProvider';
+} from '../../../api/queries'
+import LoginForm from '../../../components/Forms/LoginForm'
+import AuthWrapper from '../../../components/AuthWrapper'
+import { ServerResponseContext } from '../../../context/ServerResponseProvider'
 
 class Login extends Component {
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
     this.state = {
       identity: '',
       password: '',
       redirectToReferrer: false
     };
     [, this.authDispatch] = props.authContext;
-    [, this.dispatch] = context;
+    [, this.dispatch] = context
   }
 
   componentDidMount() {
-    const { authContext: [{ token_type, access_token }] } = this.props;
+    const {
+      authContext: [{ token_type, access_token }]
+    } = this.props
 
     if ((token_type && access_token) !== '') {
-      this.setState(({ redirectToReferrer: true }));
+      this.setState({ redirectToReferrer: true })
     }
+  }
 
+  componentDidUpdate() {
+    console.log(this.props)
   }
 
   /**
    *
    */
   onChangeHandler = (e) => {
-    const { name: target, value } = e.target;
-    const [{ formErrors }] = this.context;
+    const { name: target, value } = e.target
+    const [{ formErrors }] = this.context
 
     this.setState({
       [target]: value
-    });
+    })
 
     if (Object.keys(formErrors).length > 0) {
       this.dispatch({
         type: 'updateFormErrors',
         updateFormErrors: {}
-      });
+      })
     }
   };
 
@@ -60,36 +60,42 @@ class Login extends Component {
    *
    */
   handleSubmit = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const { identity, password } = this.state;
+    const { identity, password } = this.state
 
     const formValues = {
       identity,
       password
-    };
-
-    const login = this.login(formValues);
-    const { authContext: [{ token_type, access_token }] } = this.props;
-
-    if ((token_type && access_token) !== '') {
-      login
-        .then(async () => {
-          const roles = await this.roles();
-          const perms = await this.perms();
-          return { roles, perms };
-        })
-        .then((data) => {
-          setRolesToLocalStorage(data.roles ? data.roles : []);
-          setPermsToLocalStorage(data.perms ? data.perms : []);
-          this.setState({
-            redirectToReferrer: true
-          });
-        })
-        .catch((e) => {
-          console.log(e);
-        });
     }
+
+    const login = this.login(formValues)
+    const {
+      authContext: [{ token_type, access_token }]
+    } = this.props
+
+    login
+      .then(async () => {
+        const roles = await this.roles()
+        const perms = await this.perms()
+        return { roles, perms }
+      })
+      .then((data) => {
+        this.authDispatch({
+          type: 'setRoles',
+          updateRoles: data.roles.data
+        })
+        this.authDispatch({
+          type: 'setPerms',
+          updateRoles: data.perms.data
+        })
+        this.setState({
+          redirectToReferrer: true
+        })
+      })
+      .catch((e) => {
+        console.log(e)
+      })
   };
 
   /**
@@ -99,8 +105,7 @@ class Login extends Component {
     userLogin(data, this.dispatch)
       .then((json) => {
         if ('success' in json) {
-
-          const { access_token, token_type, expires_at } = json.data;
+          const { access_token, token_type, expires_at } = json.data
 
           this.authDispatch({
             type: 'setToken',
@@ -109,12 +114,11 @@ class Login extends Component {
               token_type,
               expires_at
             }
-          });
-
+          })
         }
-        return json.data;
+        return json.data
       })
-      .catch((error) => error)
+      .catch((error) => error);
 
   /**
    *
@@ -133,13 +137,15 @@ class Login extends Component {
       .catch((error) => error);
 
   render() {
-    const { location: { state } } = this.props;
-    const { from } = state || { from: { pathname: '/customer/' } };
-    const { redirectToReferrer, identity, password } = this.state;
-    const [{ formErrors }] = this.context;
+    const {
+      location: { state }
+    } = this.props
+    const { from } = state || { from: { pathname: '/customer/' } }
+    const { redirectToReferrer, identity, password } = this.state
+    const [{ formErrors }] = this.context
 
     if (redirectToReferrer) {
-      return <Redirect to={from.pathname} />;
+      return <Redirect to={from.pathname} />
     }
 
     return (
@@ -163,15 +169,15 @@ class Login extends Component {
           </Grid.Col>
         </Grid.Row>
       </Container>
-    );
+    )
   }
 }
 
-export default AuthWrapper(Login);
+export default AuthWrapper(Login)
 
 Login.propTypes = {
   location: PropTypes.shape().isRequired,
   authContext: PropTypes.shape().isRequired
-};
+}
 
-Login.contextType = ServerResponseContext;
+Login.contextType = ServerResponseContext

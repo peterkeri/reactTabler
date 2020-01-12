@@ -12,10 +12,13 @@
   },
   "plugins": ["react"],
   "rules": {
+    "max-len": ["error", {"code": 150}],
+    "semi": [2, "never"],
+    "prefer-const": "error",
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "implicit-arrow-linebreak": "off",
     "comma-dangle": "off",
-    "indent": "warn",
+    "indent": ["error", 2],
     "no-trailing-spaces": "error",
     "import/no-extraneous-dependencies": "off",
     "react/jsx-props-no-spreading": "off"
