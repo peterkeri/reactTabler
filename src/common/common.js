@@ -1,6 +1,8 @@
-export const isAuthenticated = () => {
-  if (localStorage.getItem("access_token")) {
-    return true;
+const isAuthenticated = () => {
+  if (localStorage.getItem('access_token')) {
+    return true
   }
-  return false;
-};
+  return false
+}
+
+export default isAuthenticated

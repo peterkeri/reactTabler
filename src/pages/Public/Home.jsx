@@ -1,7 +1,9 @@
-import * as React from "react";
+import * as React from 'react'
 
-import SiteWrapper from "../../components/SiteWrapper";
-import { Container, Header, Card, Grid, BlogCard } from "tabler-react";
+import {
+  Container, Header, Card, Grid, BlogCard
+} from 'tabler-react'
+import SiteWrapper from '../../components/SiteWrapper'
 
 function Home(props) {
   return (
@@ -74,7 +76,7 @@ function Home(props) {
         />
       </Container>
     </SiteWrapper>
-  );
+  )
 }
 
-export default Home;
+export default Home
